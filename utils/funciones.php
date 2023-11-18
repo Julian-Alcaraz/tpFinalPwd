@@ -76,6 +76,39 @@ function dismount($object)
 }
 
 
+
+/**
+ * Convierte una lista OBJ->OBJ->OBJ a array
+ * @return array
+ */
+function dismountList_ObjwObjwobj($objectList){
+    $arrayParaJson = [];
+    foreach ($objectList as $compraEstado) {
+        $arrayDatos = [];
+        $arrayObjeto = dismount($compraEstado);
+        foreach ($arrayObjeto as $clave => $valor) {
+            if (strncmp("obj", $clave, 3) === 0) {
+                $arrayDatos1 = [];
+                $arrayObjeto1 = dismount($valor);
+                foreach ($arrayObjeto1 as $clave1 => $valor1) {
+                    if (strncmp("obj", $clave1, 3) === 0) {
+                        $objArray1 = dismount($valor1);
+                        $arrayDatos1[$clave1] = $objArray1;
+                    } else {
+                        $arrayDatos1[$clave1] = $valor1;
+                    }
+                }
+                $objArray = $arrayDatos1;
+                $arrayDatos[$clave] = $objArray;
+            } else {
+                $arrayDatos[$clave] = $valor;
+            }
+        }
+        array_push($arrayParaJson, $arrayDatos);
+    }
+    return $arrayParaJson;
+}
+
 function convert_array($param)
 {
     $_AAux = array();

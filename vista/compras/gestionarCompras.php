@@ -59,66 +59,13 @@ $pagSeleccionada = "Gestionar Compras";
                                 $listadoCompra = $objCompra->buscar(null);
                                 $listadoCompraEstadoTipo = $objCompraEstadoTipo->buscar(null);
                                 $listaCompraEstado = $objCompraEstado->buscar(null);
-                                // print_r($listaCompraEstado);    
                                 $listadoCompraItem = $objCompraItem->buscar(null);
-                                // POSIBLE MODULARIZACION
 
-                                // espacio para convertir el arreglo de $listadoCOmpraEstado en Arrays y no objetos
-                                $arrayParaJson = [];
-                                foreach ($listaCompraEstado as $compraEstado) {
-                                    $arrayDatos = [];
-                                    $arrayObjeto = dismount($compraEstado);
-                                    foreach ($arrayObjeto as $clave => $valor) {
-                                        if (strncmp("obj", $clave, 3) === 0) {
-                                            $arrayDatos1 = [];
-                                            $arrayObjeto1 = dismount($valor);
-                                            foreach ($arrayObjeto1 as $clave1 => $valor1) {
-                                                if (strncmp("obj", $clave1, 3) === 0) {
-                                                    $objArray1 = dismount($valor1);
-                                                    $arrayDatos1[$clave1] = $objArray1;
-                                                } else {
-                                                    $arrayDatos1[$clave1] = $valor1;
-                                                }
-                                            }
-                                            $objArray = $arrayDatos1;
-                                            $arrayDatos[$clave] = $objArray;
-                                        } else {
-                                            $arrayDatos[$clave] = $valor;
-                                        }
-                                    }
-                                    array_push($arrayParaJson, $arrayDatos);
-                                }
-                                $JsonListaCompraEstado = json_encode($arrayParaJson, JSON_PRETTY_PRINT);
-                                // PRueba cosas raras 2.0 
-                                $arrayParaJson1 = [];
-                                foreach ($listadoCompraItem as $compraEstado) {
-                                    $arrayDatos = [];
-                                    $arrayObjeto = dismount($compraEstado);
-                                    foreach ($arrayObjeto as $clave => $valor) {
-                                        if (strncmp("obj", $clave, 3) === 0) {
-                                            $arrayDatos1 = [];
-                                            $arrayObjeto1 = dismount($valor);
-                                            foreach ($arrayObjeto1 as $clave1 => $valor1) {
-                                                if (strncmp("obj", $clave1, 3) === 0) {
-                                                    $objArray1 = dismount($valor1);
-                                                    $arrayDatos1[$clave1] = $objArray1;
-                                                } else {
-                                                    $arrayDatos1[$clave1] = $valor1;
-                                                }
-                                            }
-                                            $objArray = $arrayDatos1;
-                                            $arrayDatos[$clave] = $objArray;
-                                        } else {
-                                            $arrayDatos[$clave] = $valor;
-                                        }
-                                    }
-                                    array_push($arrayParaJson1, $arrayDatos);
-                                }
-                                $JsonListaCompraItem = json_encode($arrayParaJson1, JSON_PRETTY_PRINT);
-
-
-                                // print_r($arrayParaJson);
-                                //  fin de espacio de cosas raras
+                                // Desmonto los arreglos de objetos, con la funcion creada, estos objetos tienen a su vez otros objetos que tienen otros objetos
+                                $arrayJsonCompraEstado= dismountList_ObjwObjwobj($listaCompraEstado);
+                                $JsonListaCompraEstado = json_encode($arrayJsonCompraEstado, JSON_PRETTY_PRINT);
+                                $arrayJsonCompraItem= dismountList_ObjwObjwobj($listadoCompraItem);
+                                $JsonListaCompraItem = json_encode($arrayJsonCompraItem, JSON_PRETTY_PRINT);
                                 foreach ($listadoCompra as $compra) {
                                     echo '<tr>';
                                     $total = 0;
@@ -137,22 +84,16 @@ $pagSeleccionada = "Gestionar Compras";
                                     echo '<td>' . $compra->getCoFecha() . '</td>';
                                     echo '<td>' . $compra->getObjUsuario()->getUsNombre() . '</td>';
                                     echo '<td>' . $total . '</td>';
-
-
-
                                     echo '<td>';
                                     foreach ($listaCompraEstado as $estado) {
                                         if ($estado->getObjCompra()->getIdCompra() == $compra->getIdCompra()) {
-                                            // echo  "Estado: " . $estado->getObjCompraEstadoTipo()->getCetDescripcion() . '<br>';
-                                            // echo   "Fecha Inicio estado: " . $estado->getceFechaIni() . '<br>';
-                                            // echo  "Fecha fin de estado: " . $estado->getceFechaFin() . '<br>';
                                             $objUltimoEstadoCompra = $estado;
                                             $ultimoIdCompraEstado = $estado->getIdCompraEstado();
                                         }
                                     }
-                                    echo  "Estado: <strong>" . $estado->getObjCompraEstadoTipo()->getCetDescripcion() . '</strong><br>';
-                                    echo   "Fecha Inicio estado: " . $estado->getceFechaIni() . '<br>';
-                                    echo  "Fecha fin de estado: " . $estado->getceFechaFin() . '<br>';
+                                    echo  "Estado: <strong>" . $objUltimoEstadoCompra->getObjCompraEstadoTipo()->getCetDescripcion() . '</strong><br>';
+                                    echo   "Fecha Inicio estado: " . $objUltimoEstadoCompra->getceFechaIni() . '<br>';
+                                    echo  "Fecha fin de estado: " . $objUltimoEstadoCompra->getceFechaFin() . '<br>';
                                     echo '</td>';
                                     echo '<td>';
                                     echo '<button type="button" class="btn btn-primary" onclick="abrirModalProductos(' . $compra->getIdCompra() . ',' . $objUltimoEstadoCompra->getObjCompraEstadoTipo()->getIdCompraEstadoTipo() . ')"> Ver prod</button>';
@@ -170,18 +111,14 @@ $pagSeleccionada = "Gestionar Compras";
                                     echo '<button type="button" class="mx-1 btn btn-primary" onclick="enviarDatos(' . $compra->getIdCompra() . ',\'' . $ultimoIdCompraEstado . '\',' . ')">Guardar</button>';
                                     echo '</form>';
                                     echo '</td>';
+                                    echo '</tr>';
                                 }
-
                                 //codigo va aca 
                                 ?>
                                 </tr>
                             </tbody>
                         </table>
-
                     </div>
-                </div>
-                <div id="resultado">
-
                 </div>
             </div>
             <!-- Modal mostrar estados  -->
@@ -217,8 +154,6 @@ $pagSeleccionada = "Gestionar Compras";
                             </div>
                             <div class="modal-footer  bg-dark">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-
-
                             </div>
                         </div>
                     </form>
@@ -227,55 +162,10 @@ $pagSeleccionada = "Gestionar Compras";
         </div>
     </div>
     <?php
-
     include_once($ESTRUCTURA . "/pie.php"); ?>
-    <script>
-        function abrirModalProductos(idComprax, idCompraEstado) {
-            console.log(idCompraEstado);
-            var modal = document.getElementById('productosModal');
-            var arregloObjetos = <?php echo $JsonListaCompraItem; ?>; //este
-            var contenidoModal = document.getElementById('contenidoModalProductos');
-            contenidoModal.innerHTML = '';
-            for (var i = 0; i < arregloObjetos.length; i++) {
-
-                var compraItem = arregloObjetos[i];
-                if (compraItem.objCompra.idCompra == idComprax) {
-                    // contenidoModal.innerHTML += '<h3>Id CompraItem:' + compraItem.idCompraItem + '</h3>' +
-                    mensaje = '<h3>Producto Numero: ' + (i+1) + '</h3>' +
-                        '<div class="cajaLista">' +
-                        '<div class="row align-items-center">' +
-                        '<div class="col "><p>Producto: ' + compraItem.objProducto.proNombre +
-                        '<p>Precio por Unidad: $' + compraItem.objProducto.proPrecio +
-                        '<p>Unidades: ' + compraItem.ciCantidad + '</div>';
-                    if (idCompraEstado == 3 || idCompraEstado == 4) {
-                        mensaje += '<div class="col"><button type="button" disabled class="btn btn-secondary" onclick="eliminarItem(' + compraItem.idCompraItem + ',' + idComprax + ')">Eliminar</button> </div></div></div>';
-                    } else {
-                        mensaje += '<div class="col"><button type="button" class="btn btn-danger" onclick="eliminarItem(' + compraItem.idCompraItem + ',' + idComprax + ')">Eliminar</button> </div></div></div>';
-                    }
-                    contenidoModal.innerHTML +=   mensaje
-                }
-            }
-            $("#productosModal").modal("show");
-        }
-
-        // se deja esto aqui por que nose como sacar el php
-        function abrirModalEstados(idComprax) {
-            var modal = document.getElementById('estadosModal');
-            var arregloObjetos = <?php echo $JsonListaCompraEstado; ?>; //este
-            var contenidoModal = document.getElementById('contenidoModal');
-            contenidoModal.innerHTML = '';
-            for (var i = 0; i < arregloObjetos.length; i++) {
-                var compraEstado = arregloObjetos[i];
-                if (compraEstado.objCompra.idCompra == idComprax) {
-                    contenidoModal.innerHTML += '<h3>ESTADO NUMERO:' + (i+1) + '</h3><div class="cajaLista">' +
-                        '<p> ID tipo Estado: ' + compraEstado.objCompraEstadoTipo.idCompraEstadoTipo +
-                        '<p> DESCRIPCION: ' + compraEstado.objCompraEstadoTipo.cetDescripcion +
-                        '<p> FECHA INICIO: ' + compraEstado.ceFechaIni + ' ' +
-                        '<p> FECHA FIN: ' + compraEstado.ceFechaFin + '</div> </p> ';
-                }
-            }
-            $("#estadosModal").modal("show");
-        }
+    <script> //paso los arreglos en formato json, a variables js para usar en el script
+        var arregloItems = <?php echo $JsonListaCompraItem; ?>; 
+        var arregloCompraEstado = <?php echo $JsonListaCompraEstado; ?>;
     </script>
     <script src="js/accionesCompra.js"></script>
 </body>
