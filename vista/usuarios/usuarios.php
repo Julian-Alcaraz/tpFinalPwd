@@ -25,7 +25,6 @@ $pagSeleccionada = "Gestionar Usuarios";
 </head>
 
 <body>
-
     <?php
     $objUsuario = new AbmUsuario;
     $objRolUsuario = new AbmUsuarioRol;
@@ -36,10 +35,7 @@ $pagSeleccionada = "Gestionar Usuarios";
     $listadoRolesYusuarios = $objRolUsuario->buscar(null);
 
     ?>
-    <div id="filtro-opacidad">
-        <div id="contenido-perfil-n">
-            <br>
-            <br>
+    <div id="contenido-perfil-n">
         <div class="container text-center p-4 mt-3 cajaLista">
             <h2>Lista de usuarios </h2>
             <div class="table-responsive">
@@ -139,7 +135,6 @@ $pagSeleccionada = "Gestionar Usuarios";
                 </form>
             </div>
         </div>
-    </div>
     </div>
     <script src="./js/funcionesAmbUsuario.js"></script>
 
