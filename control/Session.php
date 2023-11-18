@@ -62,6 +62,7 @@ class Session
     {
         $resp = false;
         if ($this->activa() && isset($_SESSION['idUsuario'])) {
+            
             $resp = true;
         }
         return $resp;

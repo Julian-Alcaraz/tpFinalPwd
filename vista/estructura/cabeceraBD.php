@@ -6,34 +6,39 @@ $menues = [];
 if ($sesionValida) {
     $objAmbUsuario = new AbmUsuario();
     $objUsuario = $objSession->getUsuario();
-    $param["idUsuario"] = $objUsuario->getIdUsuario();
-    // arreglo de objetos usarioRol, cada objeto tiene un objeto usuario y uno ROl
-    $rolesUsuario = $objAmbUsuario->darRoles($param);
-    $objMenuRol = new AbmMenuRol();
-    if (count($rolesUsuario) > 1) {
-        // poder elegir el rol que quiere mostrar el menu
-        // creo todos los menus segun el rol y los guardo en un array
-        $arrayMenu = [];
-        foreach ($rolesUsuario as $rolUsua) {
-            $idRol = $rolUsua->getObjRol()->getIdRol();
-            $menuRol = $objMenuRol->darMenusPorRol($idRol);
-            // guardo el arreglo asosiativo con la clave $idRol
-            $arrayMenu[$idRol] = $menuRol;
-        }
-        $datos = data_submitted();
-        if (isset($datos['rol'])) {
-            $idSeleccionado = $datos['rol'];
-            $menues = $arrayMenu[$idSeleccionado];
+    if ($objUsuario->getUsDeshabilitado() == null) {
+        $param["idUsuario"] = $objUsuario->getIdUsuario();
+        // arreglo de objetos usarioRol, cada objeto tiene un objeto usuario y uno ROl
+        $rolesUsuario = $objAmbUsuario->darRoles($param);
+        $objMenuRol = new AbmMenuRol();
+        if (count($rolesUsuario) > 1) {
+            // poder elegir el rol que quiere mostrar el menu
+            // creo todos los menus segun el rol y los guardo en un array
+            $arrayMenu = [];
+            foreach ($rolesUsuario as $rolUsua) {
+                $idRol = $rolUsua->getObjRol()->getIdRol();
+                $menuRol = $objMenuRol->darMenusPorRol($idRol);
+                // guardo el arreglo asosiativo con la clave $idRol
+                $arrayMenu[$idRol] = $menuRol;
+            }
+            $datos = data_submitted();
+            if (isset($datos['rol'])) {
+                $idSeleccionado = $datos['rol'];
+                $menues = $arrayMenu[$idSeleccionado];
+            } else {
+                $idSeleccionado = $rolesUsuario[0]->getObjRol()->getIdRol();
+                $menues = $arrayMenu[$idSeleccionado];
+            }
         } else {
-            $idSeleccionado = $rolesUsuario[0]->getObjRol()->getIdRol();
-            $menues = $arrayMenu[$idSeleccionado];
+            $idSeleccionado = null;
+            $menues = $objMenuRol->darMenusPorUsuario($objUsuario);
         }
-    } else {
-        $idSeleccionado=null;
-        $menues = $objMenuRol->darMenusPorUsuario($objUsuario);
+    }else{
+        $objSession->cerrar();
+        header("Refresh: 0; URL='$VISTA/home/index.php'");
     }
 } else {
-    $idSeleccionado=null;
+    $idSeleccionado = null;
     $abmMenu = new AbmMenu();
     $array = [];
     $array["idMenu"] = 1;
@@ -56,7 +61,7 @@ foreach ($menues as $objMenu) {
         $seleccionado = ($pagSeleccionada == $nombreMenu) ? "link-underline-light link-underline-opacity-100" : "";
         echo
         '<h2 class="m-3">
-            <a class="link-light link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover ' . $seleccionado . '" href="' . $objMenu->getMeDescripcion() . '?rol='.$idSeleccionado.'">'
+            <a class="link-light link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover ' . $seleccionado . '" href="' . $objMenu->getMeDescripcion() . '?rol=' . $idSeleccionado . '">'
             . $objMenu->getMeNombre() .
             '</a>
             </h2>';
@@ -72,17 +77,17 @@ if ($sesionValida) {
     if (count($rolesUsuario) > 1) {
         // poder elegir el rol que quiere mostrar el menu actualiza la pagina
         echo "<form id='seleccionRolesForm'accion='' method='GET'>";
-        echo "<select class='m-3 p-2' name='rol'id='rol' onchange='submitForm()'> ";
+        echo "<select class='m-3 p-2' name='rol'id='rol' onchange='submitForm(this.value)'> ";
         // echo "<option> Seleccione la vista del rol</option>";
         foreach ($rolesUsuario as $rolUs) {
             $rol = $rolUs->getObjRol();
             if ($idSeleccionado == $rol->getIdRol()) {
-                echo "<option selected value='" . $rol->getIdRol() . "'>" . $rol->getIdRol().": " . $rol->getRolDescripcion() . "</option>";
+                echo "<option selected value='" . $rol->getIdRol() . "'>" . $rol->getIdRol() . ": " . $rol->getRolDescripcion() . "</option>";
             } else {
-                echo "<option  value='" . $rol->getIdRol() . "'>". $rol->getIdRol() . ": " . $rol->getRolDescripcion() . "</option>";
+                echo "<option  value='" . $rol->getIdRol() . "'>" . $rol->getIdRol() . ": " . $rol->getRolDescripcion() . "</option>";
             }
         }
-        echo "</select>";   
+        echo "</select>";
         echo "</form>";
     }
 }
@@ -90,7 +95,8 @@ echo '</div>';
 echo '</div>';
 ?>
 <script>
-    function submitForm() {
+    function submitForm(idSeleccionado) {
         document.getElementById("seleccionRolesForm").submit();
+        window.location.href = '<?=$VISTA?>/home/index.php?rol='+idSeleccionado;
     }
 </script>
