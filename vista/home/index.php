@@ -6,7 +6,8 @@ $pagSeleccionada = "Home";
 <html lang="en">
 <head>
     <?php include_once($ESTRUCTURA . "/header.php"); ?>
-    <?php include_once($ESTRUCTURA . "/cabeceraBD.php"); ?>
+    <?php //include_once($ESTRUCTURA . "/pruebasCabecera.php"); 
+    include_once($ESTRUCTURA . "/cabeceraBD.php"); ?>
 </head>
 <body style="overflow: hidden;">
     <!--  <div class="container text-center my-4">-->
