@@ -33,7 +33,6 @@ $pagSeleccionada = "Gestionar Usuarios";
     $listadoRoles = $objRol->buscar(null);
     $listaUsuarios = $objUsuario->buscar(null);
     $listadoRolesYusuarios = $objRolUsuario->buscar(null);
-
     ?>
     <div id="contenido-perfil-n">
         <div class="container text-center p-4 mt-3 cajaLista">
@@ -42,7 +41,7 @@ $pagSeleccionada = "Gestionar Usuarios";
                 <table class="table m-auto">
                     <thead class="table-dark fw-bold">
                         <tr>
-                            <td>ID </td>
+                            <td>ID</td>
                             <td>Nombre Usuario</td>
                             <td>Password</td>
                             <td>Mail</td>
@@ -118,11 +117,20 @@ $pagSeleccionada = "Gestionar Usuarios";
                                 <input type="password" class="form-control" id="usPass" name="usPass">
                             </div>
                             <div class="mb-3">
-                                <select class="form-select" aria-label="Default select example" name="idRol" id="idRol">
+                                 <select class="form-select" aria-label="Default select example" name="idRol" id="idRol">
                                     <option selected>Seleciona un Rol</option>
-                                    <option value="1">Admin</option>
-                                    <option value="2">Cliente</option>
-                                    <option value="3">Deposito</option>
+                                    <?php 
+                                        foreach ($listadoRoles as $rol){
+                                            if($rol->getRolDeshabilitado()== null){
+                                                echo "
+                                                <option value=".$rol->getIdRol().">".$rol->getRolDescripcion()."</option>
+                                                ";
+                                            }
+                                        }
+                                    ?>
+                                    <!-- <option value="1">Admin</option> -->
+                                    <!-- <option value="2">Cliente</option> -->
+                                    <!-- <option value="3">Deposito</option> -->
                                 </select>
                             </div>
                             <input id="accion" name="accion" value="editar" type="hidden">

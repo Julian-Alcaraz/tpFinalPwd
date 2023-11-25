@@ -41,6 +41,7 @@ body{
 #contenido-perfil {
     margin-top: 50px ; 
     color: white;    
+    margin-bottom: 100px !important;
  
     width: 100%;
 }
@@ -48,6 +49,7 @@ body{
 #contenido-perfil-n {
     margin-top: 50px !important; 
     color: black;    
+    margin-bottom: 100px !important;
  
     width: 100%;
 }

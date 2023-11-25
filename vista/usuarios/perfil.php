@@ -56,7 +56,6 @@ $pagSeleccionada = "Mi Perfil";
                         </tr>
                     </table>
                 </div>
-
         <?php
             } else {
                 echo '<div class="container mt-5">';

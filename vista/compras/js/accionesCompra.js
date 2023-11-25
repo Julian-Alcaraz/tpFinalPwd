@@ -25,6 +25,7 @@ function abrirModalProductos(idComprax, idCompraEstado) {
 }
 
 function abrirModalEstados(idComprax) {
+  console.log(arregloCompraEstado);
   var contenidoModal = document.getElementById('contenidoModal');
   contenidoModal.innerHTML = '';
   j = 1;
@@ -36,7 +37,7 @@ function abrirModalEstados(idComprax) {
         '<p> ID tipo Estado: ' + compraEstado.objCompraEstadoTipo.idCompraEstadoTipo +
         '<p> DESCRIPCION: ' + compraEstado.objCompraEstadoTipo.cetDescripcion +
         '<p> FECHA INICIO: ' + compraEstado.ceFechaIni + ' ' +
-        '<p> FECHA FIN: ' + compraEstado.ceFechaFin + '</div> </p> ';
+        '<p> FECHA FIN: ' + compraEstado.ceFechaFin  + '</div> </p> ';
       j++;
     }
   }
